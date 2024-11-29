@@ -42,30 +42,13 @@ def validate_numeric_input(value):
     Validates that the input is a valid number (integer or float).
 
     Args:
-        value (str): The input string.
+        value (str): The user input to validate.
 
-    Returns:
-        bool: True if valid, raises ValueError otherwise.
+    Raises:
+        ValueError: If the input is not a valid number.
     """
-    if not re.match(r"^-?\d+(\.\d+)?$", value):
-        raise ValueError(f"Invalid numeric input: '{value}'. Please enter a valid number.")
-    return True
-
-
-def validate_equation_input(equation):
-    """
-    Validates that the input is a valid linear equation.
-
-    Args:
-        equation (str): The input string.
-
-    Returns:
-        bool: True if valid, raises ValueError otherwise.
-    """
-    pattern = r"^[\d+\-*/xXyYzZ\s=]+$"
-    if not re.match(pattern, equation):
-        raise ValueError(f"Invalid equation format: '{equation}'. Ensure the input is a valid equation.")
-    return True
+    if not re.fullmatch(r'-?\d+(\.\d+)?', value):
+        raise ValueError(f"Invalid input: '{value}' is not a valid number.")
 
 
 def solve_quadratic(a, b, c):
@@ -82,49 +65,62 @@ def solve_quadratic(a, b, c):
     print(f"Solution: {result}")
 
 
-def solve_two_unknowns(eq1, eq2):
+def solve_two_unknowns_with_coefficients(a1, b1, c1, a2, b2, c2):
     """
     Solves a system of two equations with two unknowns using the Wolfram Alpha API.
 
-    Args:
-        eq1 (str): The first equation (e.g., "2x + 3y = 5").
-        eq2 (str): The second equation (e.g., "x - y = 1").
+    The equations are of the form:
+    a1*x + b1*y = c1
+    a2*x + b2*y = c2
     """
-    query = f"solve {eq1}, {eq2}"
+    eq1 = f"{a1}x + {b1}y = {c1}"
+    eq2 = f"{a2}x + {b2}y = {c2}"
+    query = f"solve {{ {eq1}, {eq2} }} for x, y"
+    print(f"Debug: Query sent to API: {query}")
     result = fetch_solution(query)
     print(f"Solution: {result}")
 
 
-def solve_three_unknowns(eq1, eq2, eq3):
+def solve_three_unknowns_with_coefficients(a1, b1, c1, d1, a2, b2, c2, d2, a3, b3, c3, d3):
     """
     Solves a system of three equations with three unknowns using the Wolfram Alpha API.
 
-    Args:
-        eq1 (str): The first equation.
-        eq2 (str): The second equation.
-        eq3 (str): The third equation.
+    The equations are of the form:
+    a1*x + b1*y + c1*z = d1
+    a2*x + b2*y + c2*z = d2
+    a3*x + b3*y + c3*z = d3
     """
-    query = f"solve {eq1}, {eq2}, {eq3}"
+    eq1 = f"{a1}x + {b1}y + {c1}z = {d1}"
+    eq2 = f"{a2}x + {b2}y + {c2}z = {d2}"
+    eq3 = f"{a3}x + {b3}y + {c3}z = {d3}"
+    query = f"solve {{ {eq1}, {eq2}, {eq3} }} for x, y, z"
+    print(f"Debug: Query sent to API: {query}")
     result = fetch_solution(query)
     print(f"Solution: {result}")
 
 
 def show_instructions():
     """
-    Displays instructions on how to use the app.
+    Displays instructions on how to use the application.
     """
-    print("\n--- Instructions ---")
-    print("1. Solve Quadratic Equation:")
-    print("   - Input three coefficients (a, b, c).")
-    print("   - The app will return solutions for ax^2 + bx + c = 0.")
-    print("\n2. Solve System of 2 Equations:")
-    print("   - Input two linear equations (e.g., '2x + 3y = 5' and 'x - y = 2').")
-    print("   - The app will return the values of x and y.")
-    print("\n3. Solve System of 3 Equations:")
-    print("   - Input three linear equations (e.g., 'x + y + z = 6', 'x - y = 4', 'z = 3').")
-    print("   - The app will return the values of x, y, and z.")
-    print("\n4. Exit the application.")
-    print("--------------------\n")
+    print("""
+    Instructions:
+    1. Solve Quadratic Equation:
+       Input the coefficients a, b, and c for the equation ax^2 + bx + c = 0.
+    
+    2. Solve System of 2 Equations:
+       Input the coefficients for two equations of the form:
+       a1*x + b1*y = c1
+       a2*x + b2*y = c2
+
+    3. Solve System of 3 Equations:
+       Input the coefficients for three equations of the form:
+       a1*x + b1*y + c1*z = d1
+       a2*x + b2*y + c2*z = d2
+       a3*x + b3*y + c3*z = d3
+
+    4. Exit the application by selecting option 5.
+    """)
 
 
 def main():
@@ -132,25 +128,22 @@ def main():
     Main function to provide a menu for the user to choose and solve different types of equations.
     """
     while True:
-        print("Choose a task:")
-        print("0. Instructions")
+        print("\nChoose a task:")
         print("1. Solve Quadratic Equation (ax^2 + bx + c = 0)")
         print("2. Solve System of 2 Equations with 2 Unknowns")
         print("3. Solve System of 3 Equations with 3 Unknowns")
-        print("4. Exit Application")
+        print("4. Instructions")
+        print("5. Exit")
 
-        choice = input("Enter your choice (0/1/2/3/4): ").strip()
+        choice = input("Enter your choice (1/2/3/4/5): ").strip()
 
-        if choice == '0':
-            show_instructions()
-
-        elif choice == '1':
+        if choice == '1':
             try:
                 a = input("Enter coefficient a: ").strip()
-                validate_numeric_input(a)
                 b = input("Enter coefficient b: ").strip()
-                validate_numeric_input(b)
                 c = input("Enter coefficient c: ").strip()
+                validate_numeric_input(a)
+                validate_numeric_input(b)
                 validate_numeric_input(c)
                 solve_quadratic(a, b, c)
             except ValueError as e:
@@ -158,34 +151,64 @@ def main():
 
         elif choice == '2':
             try:
-                eq1 = input("Enter the first equation (e.g., 2x + 3y = 5): ").strip()
-                validate_equation_input(eq1)
-                eq2 = input("Enter the second equation (e.g., x - y = 2): ").strip()
-                validate_equation_input(eq2)
-                solve_two_unknowns(eq1, eq2)
+                print("Enter coefficients for the equations in the form a1*x + b1*y = c1:")
+                a1 = input("Enter a1: ").strip()
+                b1 = input("Enter b1: ").strip()
+                c1 = input("Enter c1: ").strip()
+                a2 = input("Enter a2: ").strip()
+                b2 = input("Enter b2: ").strip()
+                c2 = input("Enter c2: ").strip()
+                validate_numeric_input(a1)
+                validate_numeric_input(b1)
+                validate_numeric_input(c1)
+                validate_numeric_input(a2)
+                validate_numeric_input(b2)
+                validate_numeric_input(c2)
+                solve_two_unknowns_with_coefficients(a1, b1, c1, a2, b2, c2)
             except ValueError as e:
                 print(e)
 
         elif choice == '3':
             try:
-                eq1 = input("Enter the first equation: ").strip()
-                validate_equation_input(eq1)
-                eq2 = input("Enter the second equation: ").strip()
-                validate_equation_input(eq2)
-                eq3 = input("Enter the third equation: ").strip()
-                validate_equation_input(eq3)
-                solve_three_unknowns(eq1, eq2, eq3)
+                print("Enter coefficients for the equations in the form a1*x + b1*y + c1*z = d1:")
+                a1 = input("Enter a1: ").strip()
+                b1 = input("Enter b1: ").strip()
+                c1 = input("Enter c1: ").strip()
+                d1 = input("Enter d1: ").strip()
+                a2 = input("Enter a2: ").strip()
+                b2 = input("Enter b2: ").strip()
+                c2 = input("Enter c2: ").strip()
+                d2 = input("Enter d2: ").strip()
+                a3 = input("Enter a3: ").strip()
+                b3 = input("Enter b3: ").strip()
+                c3 = input("Enter c3: ").strip()
+                d3 = input("Enter d3: ").strip()
+                validate_numeric_input(a1)
+                validate_numeric_input(b1)
+                validate_numeric_input(c1)
+                validate_numeric_input(d1)
+                validate_numeric_input(a2)
+                validate_numeric_input(b2)
+                validate_numeric_input(c2)
+                validate_numeric_input(d2)
+                validate_numeric_input(a3)
+                validate_numeric_input(b3)
+                validate_numeric_input(c3)
+                validate_numeric_input(d3)
+                solve_three_unknowns_with_coefficients(a1, b1, c1, d1, a2, b2, c2, d2, a3, b3, c3, d3)
             except ValueError as e:
                 print(e)
 
         elif choice == '4':
+            show_instructions()
+
+        elif choice == '5':
             print("Exiting the application. Goodbye!")
             break
 
         else:
-            print("Invalid choice! Please select 0, 1, 2, 3, or 4.")
+            print("Invalid choice! Please select 1, 2, 3, 4, or 5.")
 
 
 if __name__ == "__main__":
     main()
-
