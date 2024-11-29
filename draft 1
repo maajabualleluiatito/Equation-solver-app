@@ -1,25 +1,18 @@
-global
-    log /dev/log    local0
-    log /dev/log    local1 notice
-    chroot /var/lib/haproxy
-    stats timeout 30s
-    user haproxy
-    group haproxy
-    daemon
+systemctl status haproxy.service
+● haproxy.service - HAProxy Load Balancer
+     Loaded: loaded (/lib/systemd/system/haproxy.service; enabled; vendor preset: enabled)
+     Active: failed (Result: exit-code) since Fri 2024-11-29 13:07:08 UTC; 3min 56s ago
+       Docs: man:haproxy(1)
+             file:/usr/share/doc/haproxy/configuration.txt.gz
+    Process: 129469 ExecStartPre=/usr/sbin/haproxy -Ws -f $CONFIG -c -q $EXTRAOPTS (code=exited, status=0/SUCCESS)
+    Process: 129471 ExecStart=/usr/sbin/haproxy -Ws -f $CONFIG -p $PIDFILE $EXTRAOPTS (code=exited, status=1/FAILURE)
+   Main PID: 129471 (code=exited, status=1/FAILURE)
 
-defaults
-    log     global
-    option  httplog
-    option  dontlognull
-    timeout connect 5000ms
-    timeout client  50000ms
-    timeout server  50000ms
-
-frontend http_front
-    bind *:80
-    default_backend http_back
-
-backend http_back
-    balance roundrobin
-    server web01 34.228.55.164:80 check
-    server web02 34.207.112.151:80 check
+Nov 29 13:07:08 6322-lb-01 systemd[1]: haproxy.service: Main process exited, code=exited, status=1/FAILURE
+Nov 29 13:07:08 6322-lb-01 systemd[1]: haproxy.service: Failed with result 'exit-code'.
+Nov 29 13:07:08 6322-lb-01 systemd[1]: Failed to start HAProxy Load Balancer.
+Nov 29 13:07:08 6322-lb-01 systemd[1]: haproxy.service: Scheduled restart job, restart counter is at 5.
+Nov 29 13:07:08 6322-lb-01 systemd[1]: Stopped HAProxy Load Balancer.
+Nov 29 13:07:08 6322-lb-01 systemd[1]: haproxy.service: Start request repeated too quickly.
+Nov 29 13:07:08 6322-lb-01 systemd[1]: haproxy.service: Failed with result 'exit-code'.
+Nov 29 13:07:08 6322-lb-01 systemd[1]: Failed to start HAProxy Load Balancer.
