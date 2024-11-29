@@ -1,1 +1,1 @@
-# Equation-solver-app
+WOLFRAM_APP_ID=8ERG38-9Q2TK25XQ8
